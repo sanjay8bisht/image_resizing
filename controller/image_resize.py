@@ -22,6 +22,12 @@ class ImageResize(object):
 
         if len(request.files) != 0:
             self.form = True
+            
+            if "width" and "height" not in request.form:
+                return jsonify({"success": False, "message": "Please mention width and height"})
+            elif not all(isinstance(el , int) for el in [request.form.get("width"), request.form.get("height")]):
+                 return jsonify({"success": False, "message": "width and height should be integer"})
+
             s3_images_url = list()
             resized_images = list()
             failed_images = list()
@@ -63,7 +69,10 @@ class ImageResize(object):
 
 
         self.delete_resized_images(resized_images)
-        return jsonify({"success": ",".join(s3_images_url) , "failed" : ",".join(failed_images) + " , Image should be of type ('txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif')"})
+        if len(failed_images) == 0:
+            return jsonify({"success": True, "urls": s3_images_url})
+        else:
+            return jsonify({"success": s3_images_url , "failed" : ",".join(failed_images) + " , Image should be of type ('txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif')"})
 
 
 
