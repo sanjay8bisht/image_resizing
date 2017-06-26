@@ -40,7 +40,7 @@ class ImageResize(object):
                     img = Image.open(image)
                     size = (int(width), int(height))
                     img.thumbnail(size, Image.ANTIALIAS)
-                    new_file =  file.split('/')[-1] + "_resized_" + str(width) + "_" + str(height) + ext
+                    new_file =  file.split('/')[-1] + "_resized_" + str(width) + "X" + str(height) + ext
                     saved_file = self.upload_folder + '/' + new_file
                     resized_images.append(saved_file)
                     s3_detination = self.folder_name + new_file
@@ -58,7 +58,7 @@ class ImageResize(object):
                     img = Image.open(BytesIO(base64.b64decode(image["data"])))
                     size = (image["width"], image["height"])
                     img.thumbnail(size, Image.ANTIALIAS)
-                    new_file =  file.split('/')[-1] + "_resized_" + str(image["width"]) + "_" + str(image["height"]) + ext
+                    new_file =  file.split('/')[-1] + "_resized_" + str(image["width"]) + "X" + str(image["height"]) + ext
                     saved_file = self.upload_folder + '/' + new_file
                     resized_images.append(saved_file)
                     s3_detination = self.folder_name + new_file
@@ -79,10 +79,10 @@ class ImageResize(object):
     def delete_resized_images(self, resized_images):
         for image in resized_images:
             if self.form:
-                # uploaded_path, image_name = image.rsplit('/', 1)
-                # image_name, ext = image_name.rsplit('.', 1)
-                # original_image_name = re.sub(r"_resized_(.*)", '', image_name)
-                # original_image = uploaded_path + '/' + original_image_name + '.' + ext
-                # os.unlink(original_image)
-                pass
-            os.unlink(image)
+                uploaded_path, image_name = image.rsplit('/', 1)
+                image_name, ext = image_name.rsplit('.', 1)
+                original_image_name = re.sub(r"_resized_(.*)", '', image_name)
+                original_image = uploaded_path + '/' + original_image_name + '.' + ext
+                os.unlink(original_image)
+            else:
+                os.unlink(image)
